@@ -1,7 +1,7 @@
 # Cosmos Policy: Fine-Tuning Video Models for Visuomotor Control and Planning
 
 <p align="center">
-  <a href="https://youtu.be/LH8uyBzDjCA">Summary Video</a>&nbsp | 🤗 <a href="https://huggingface.co/collections/nvidia/cosmos-policy">Hugging Face</a>&nbsp | <a href="">Paper Coming Soon!</a>&nbsp | <a href="https://research.nvidia.com/labs/dir/cosmos-predict2.5">Paper Website</a>
+  <a href="https://youtu.be/V2qdFD9n5BM">Summary Video</a>&nbsp | 🤗 <a href="https://huggingface.co/collections/nvidia/cosmos-policy">Hugging Face</a>&nbsp | <a href="">Paper Coming Soon!</a>&nbsp | <a href="https://research.nvidia.com/labs/dir/cosmos-policy/">Project Website</a>
 </p>
 
 ## System Requirements
