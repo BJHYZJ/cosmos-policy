@@ -1,7 +1,7 @@
 # Cosmos Policy: Fine-Tuning Video Models for Visuomotor Control and Planning
 
 <p align="center">
-  <a href="https://youtu.be/V2qdFD9n5BM">Summary Video</a>&nbsp | 🤗 <a href="https://huggingface.co/collections/nvidia/cosmos-policy">Hugging Face</a>&nbsp | <a href="">Paper Coming Soon!</a>&nbsp | <a href="https://research.nvidia.com/labs/dir/cosmos-policy/">Project Website</a>
+  <a href="https://arxiv.org/abs/2601.16163">Paper</a>&nbsp | <a href="https://research.nvidia.com/labs/dir/cosmos-policy/">Project Website</a>&nbsp | 🤗 <a href="https://huggingface.co/collections/nvidia/cosmos-policy">Models & Training Data</a>&nbsp | <a href="https://youtu.be/V2qdFD9n5BM">Summary Video</a>
 </p>
 
 ## System Requirements
@@ -115,8 +115,13 @@ If you run into any issues, please open a new GitHub issue. For critical blockin
 
 ## Citation
 
-If you use our code in your work, please cite [our paper](https://openreview.net/forum?id=wPEIStHxYH):
+If you use our code in your work, please cite [our paper](https://arxiv.org/abs/2601.16163):
 
 ```bibtex
-(Coming soon!)
+@article{kim2026cosmos,
+  title={Cosmos Policy: Fine-Tuning Video Models for Visuomotor Control and Planning},
+  author={Kim, Moo Jin and Gao, Yihuai and Lin, Tsung-Yi and Lin, Yen-Chen and Ge, Yunhao and Lam, Grace and Liang, Percy and Song, Shuran and Liu, Ming-Yu and Finn, Chelsea and Gu, Jinwei},
+  journal={arXiv preprint arXiv:2601.16163},
+  year={2026}
+}
 ```
