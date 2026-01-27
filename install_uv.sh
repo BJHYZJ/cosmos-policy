@@ -10,10 +10,10 @@ rm -rf cuda_12.8.0_570.86.10_linux.run
 
 # 3. create python 3.10 environment
 # uv venv --python 3.10
-uv venv .venv_libero --python 3.10 --prompt cosmos_policy_libero
+uv venv --python 3.10
 
 # 4. activate environment and install environments
-source .venv_libero/bin/activate
+source .venv/bin/activate
 uv sync --active --extra cu128 --group libero
 
 # deactivate environment
