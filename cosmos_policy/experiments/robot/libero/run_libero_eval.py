@@ -721,6 +721,7 @@ def run_task(
             success=success,
             task_description=task_description,
             log_file=log_file,
+            save_dir=cfg.local_log_dir,
         )
 
         # Save replay video with future image predictions included
@@ -740,8 +741,9 @@ def run_task(
             rollout_wrist_images=replay_wrist_images,
             future_primary_image_predictions=future_primary_image_predictions,
             future_wrist_image_predictions=future_wrist_image_predictions,
-            log_file=log_file,
             show_diff=False,
+            log_file=log_file,
+            save_dir=cfg.local_log_dir,
         )
 
         # Save episodic data (in data collection mode)

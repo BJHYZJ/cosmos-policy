@@ -58,16 +58,39 @@ def get_libero_wrist_image(obs, flip_images: bool = False):
     return img
 
 
-def save_rollout_video(rollout_images, idx, success, task_description, log_file=None):
-    """Saves an MP4 replay of an episode."""
-    rollout_dir = f"./rollouts/{DATE}"
-    os.makedirs(rollout_dir, exist_ok=True)
+# def save_rollout_video(rollout_images, idx, success, task_description, log_file=None):
+#     """Saves an MP4 replay of an episode."""
+#     rollout_dir = f"./rollouts/{DATE}"
+#     os.makedirs(rollout_dir, exist_ok=True)
+#     processed_task_description = task_description.lower().replace(" ", "_").replace("\n", "_").replace(".", "_")[:40]
+#     mp4_path = f"{rollout_dir}/{DATE_TIME}--episode={idx}--success={success}--task={processed_task_description}.mp4"
+#     video_writer = imageio.get_writer(mp4_path, fps=30)
+#     for img in rollout_images:
+#         video_writer.append_data(img)
+#     video_writer.close()
+#     print(f"Saved rollout MP4 at path {mp4_path}")
+#     if log_file is not None:
+#         log_file.write(f"Saved rollout MP4 at path {mp4_path}\n")
+#     return mp4_path
+
+
+def save_rollout_video(rollout_images, idx, success, task_description, log_file=None, save_dir=None):
+    """Saves an MP4 replay of an episode in the specified directory."""
+    # If save_dir is not provided, fallback to a default or current dir
+    if save_dir is None:
+        save_dir = f"./rollouts/{DATE}"
+    
+    os.makedirs(save_dir, exist_ok=True)
+    
     processed_task_description = task_description.lower().replace(" ", "_").replace("\n", "_").replace(".", "_")[:40]
-    mp4_path = f"{rollout_dir}/{DATE_TIME}--episode={idx}--success={success}--task={processed_task_description}.mp4"
+    # We use idx and success in the filename for easy filtering
+    mp4_path = os.path.join(save_dir, f"video--episode={idx}--success={success}--task={processed_task_description}.mp4")
+    
     video_writer = imageio.get_writer(mp4_path, fps=30)
     for img in rollout_images:
         video_writer.append_data(img)
     video_writer.close()
+    
     print(f"Saved rollout MP4 at path {mp4_path}")
     if log_file is not None:
         log_file.write(f"Saved rollout MP4 at path {mp4_path}\n")
@@ -86,12 +109,14 @@ def save_rollout_video_with_future_image_predictions(
     future_wrist_image_predictions=None,
     show_diff=False,
     log_file=None,
+    log_dir=None,
 ):
     """Saves an MP4 replay of an episode with future image predictions shown on the right."""
-    rollout_dir = f"./rollouts/{DATE}"
-    os.makedirs(rollout_dir, exist_ok=True)
+    if log_dir is None:
+        log_dir = f"./rollouts/{DATE}"
+    os.makedirs(log_dir, exist_ok=True)
     processed_task_description = task_description.lower().replace(" ", "_").replace("\n", "_").replace(".", "_")[:35]
-    mp4_path = f"{rollout_dir}/{DATE_TIME}--with_future_img--episode={idx}--success={success}--task={processed_task_description}.mp4"
+    mp4_path = f"{log_dir}/{DATE_TIME}--with_future_img--episode={idx}--success={success}--task={processed_task_description}.mp4"
     video_writer = imageio.get_writer(mp4_path, fps=30)
 
     # Determine availability of predictions
