@@ -743,7 +743,7 @@ def run_task(
             future_wrist_image_predictions=future_wrist_image_predictions,
             show_diff=False,
             log_file=log_file,
-            save_dir=cfg.local_log_dir,
+            log_dir=cfg.local_log_dir,
         )
 
         # Save episodic data (in data collection mode)
