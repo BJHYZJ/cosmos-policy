@@ -9,12 +9,6 @@ rm -rf cuda_12.8.0_570.86.10_linux.run
 ## set ~/.bashrc to overwrite cuda-12.8
 
 # 3. create python 3.10 environment
-# uv venv --python 3.10
-uv venv --python 3.10
-
-# 4. activate environment and install environments
-source .venv/bin/activate
-uv sync --active --extra cu128 --group libero
-
-# deactivate environment
-deactivate
+# create uv.lock just for you environment
+UV_PYTHON=python3.10 ./bin/uv_lock.sh .
+uv sync --extra cu128 --group libero --python 3.10
