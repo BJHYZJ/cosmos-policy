@@ -1,6 +1,3 @@
-# LIBERO Evaluations Single
-## task_suite_name: [libero_spatial, libero_object, libero_goal, libero_10]
-## seed: [195, 196, 197]
 python -m cosmos_policy.experiments.robot.libero.run_libero_eval \
     --config cosmos_predict2_2b_480p_libero__inference_only \
     --ckpt_path nvidia/Cosmos-Policy-LIBERO-Predict2-2B \
@@ -14,11 +11,13 @@ python -m cosmos_policy.experiments.robot.libero.run_libero_eval \
     --trained_with_image_aug True \
     --chunk_size 16 \
     --num_open_loop_steps 16 \
-    --task_suite_name libero_spatial \
-    --local_log_dir logs/libero \
+    --task_suite_name libero_10 \
+    --local_log_dir logs/libero/test \
     --randomize_seed False \
     --data_collection False \
+    --use_parallel_inference False \
     --available_gpus "0,1,2,3,4,5,6,7" \
+    --num_queries_best_of_n 8 \
     --seed 195 \
     --use_variance_scale False \
     --deterministic True \
@@ -29,4 +28,4 @@ python -m cosmos_policy.experiments.robot.libero.run_libero_eval \
     --flip_images True \
     --num_denoising_steps_action 5 \
     --num_denoising_steps_future_state 1 \
-    --num_denoising_steps_value 1 \
+    --num_denoising_steps_value 1
