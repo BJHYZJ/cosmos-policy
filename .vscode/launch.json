@@ -12,13 +12,17 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: Libero Eval (Cosmos)",
+            "name": "Cosmos: LIBERO Eval",
             "type": "debugpy",
             "request": "launch",
             "module": "cosmos_policy.experiments.robot.libero.run_libero_eval",
-            "python": "${command:python.interpreterPath}",
             "console": "integratedTerminal",
-            "justMyCode": false,
+            "justMyCode": true,
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0",
+                "PYTHONPATH": "${workspaceFolder}",
+                "UV_SKIP_INTERMEDIATE_ENTRIES": "1"
+            },
             "args": [
                 "--config", "cosmos_predict2_2b_480p_libero__inference_only",
                 "--ckpt_path", "nvidia/Cosmos-Policy-LIBERO-Predict2-2B",
@@ -33,12 +37,10 @@
                 "--chunk_size", "16",
                 "--num_open_loop_steps", "16",
                 "--task_suite_name", "libero_10",
-                "--local_log_dir", "logs/libero/test",
+                "--local_log_dir", "./logs/libero/test",
                 "--randomize_seed", "False",
                 "--data_collection", "False",
-                "--use_parallel_inference", "False",
                 "--available_gpus", "0,1,2,3,4,5,6,7",
-                "--num_queries_best_of_n", "8",
                 "--seed", "195",
                 "--use_variance_scale", "False",
                 "--deterministic", "True",
