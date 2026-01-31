@@ -18,10 +18,11 @@
             "module": "cosmos_policy.experiments.robot.libero.run_libero_eval",
             "console": "integratedTerminal",
             "justMyCode": true,
+            "envFile": "${workspaceFolder}/.env",
             "env": {
                 "CUDA_VISIBLE_DEVICES": "0",
                 "PYTHONPATH": "${workspaceFolder}",
-                "UV_SKIP_INTERMEDIATE_ENTRIES": "1"
+                // "UV_SKIP_INTERMEDIATE_ENTRIES": "1"
             },
             "args": [
                 "--config", "cosmos_predict2_2b_480p_libero__inference_only",
@@ -51,8 +52,67 @@
                 "--flip_images", "True",
                 "--num_denoising_steps_action", "5",
                 "--num_denoising_steps_future_state", "1",
-                "--num_denoising_steps_value", "1"
+                "--num_denoising_steps_value", "1",
+                "--save_videos", "False"
             ]
+        },
+        {
+            "name": "Cosmos: LIBERO test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "libero_test.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0",
+                "PYTHONPATH": "${workspaceFolder}",
+                // "UV_SKIP_INTERMEDIATE_ENTRIES": "1"
+            },
+        },
+        {
+            "name": "Debug Cosmos Policy Train (Multi-GPUs)",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/.venv/bin/python", 
+            "module": "torch.distributed.run",
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "BASE_DATASETS_DIR": "/mnt/data/data/yanzj/workspace/dataset",
+            },
+            "args": [
+                "--nproc_per_node=8",
+                "--master_port=12341",
+                "-m", "cosmos_policy.scripts.train",
+                "--config=cosmos_policy/config/config.py",
+                "--",
+                "experiment=cosmos_predict2_2b_480p_libero",
+                "trainer.grad_accum_iter=8"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Debug Cosmos Single GPU",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/.venv/bin/python", 
+            "module": "torch.distributed.run",
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0",
+                "BASE_DATASETS_DIR": "/mnt/data/data/yanzj/workspace/dataset",
+            },
+            "args": [
+                "--nproc_per_node=1",
+                "--master_port=12341",
+                "-m", "cosmos_policy.scripts.train",
+                "--config=cosmos_policy/config/config.py",
+                "--",
+                "experiment=cosmos_predict2_2b_480p_libero",
+                "trainer.grad_accum_iter=8"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

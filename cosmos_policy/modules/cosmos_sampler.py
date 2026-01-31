@@ -65,9 +65,9 @@ class CosmosPolicySampler(Sampler):
         solver_option: str = "2ab",
     ) -> torch.Tensor:
         in_dtype = x_sigma_max.dtype
-
+        # x_B_StateShape: noise_x; t_B: sigma
         def float64_x0_fn(x_B_StateShape: torch.Tensor, t_B: torch.Tensor) -> torch.Tensor:
-            return x0_fn(x_B_StateShape.to(in_dtype), t_B.to(in_dtype)).to(torch.float64)
+            return x0_fn(x_B_StateShape.to(in_dtype), t_B.to(in_dtype)).to(torch.float64)  # 采样器内部使用 float64 精度进行计算以提高数值稳定性
 
         is_multistep = is_multi_step_fn_supported(solver_option)
         is_rk = is_runge_kutta_fn_supported(solver_option)
@@ -114,11 +114,12 @@ class CosmosPolicySampler(Sampler):
         Returns:
             torch.Tensor: Denoised output tensor.
         """
+        # 计算求解器阶数和时间戳数量  
         sampler_cfg = self.cfg if sampler_cfg is None else sampler_cfg
         solver_order = 1 if sampler_cfg.solver.is_multi else int(sampler_cfg.solver.rk[0])
         num_timestamps = sampler_cfg.timestamps.nfe // solver_order
-
-        sigmas_L = get_rev_ts(
+        # 生成反向时间步序列 (从 sigma_max 到 sigma_min)  
+        sigmas_L = get_rev_ts(  # [80.0000, 42.2911, 20.9724,  9.6183,  4.0000]
             sampler_cfg.timestamps.t_min, sampler_cfg.timestamps.t_max, num_timestamps, sampler_cfg.timestamps.order
         ).to(noisy_input_B_StateShape.device)
 

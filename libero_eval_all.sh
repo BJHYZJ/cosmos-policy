@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./env_config.sh
+
 ################################################################################
 # 1. Global Configurations
 ################################################################################
@@ -13,6 +15,7 @@ STEPS_ACT=5
 STEPS_FUTURE=1
 STEPS_VALUE=1
 DETERMINISTIC="True"
+SAVE_VIDEO="False"
 
 ################################################################################
 # 2. Execution Function
@@ -57,7 +60,8 @@ run_task() {
             --flip_images True \
             --num_denoising_steps_action "$STEPS_ACT" \
             --num_denoising_steps_future_state "$STEPS_FUTURE" \
-            --num_denoising_steps_value "$STEPS_VALUE"
+            --num_denoising_steps_value "$STEPS_VALUE" \
+            --save_videos "$SAVE_VIDEO"
 }
 
 ################################################################################

@@ -1,3 +1,15 @@
+#!/bin/bash
+source ./env_config.sh
+
+echo $HF_ENDPOINT
+echo $TRANSFORMERS_CACHE
+echo $HF_ENDPOINT
+echo $HF_TOKEN
+
+echo $EGL_DEVICE_ID
+echo $MUJOCO_GL
+echo $PYOPENGL_PLATFORM
+
 # *** Main checkpoint: 98.5% success rate ***
 #   Replace `task_suite_name` with one of {libero_spatial, libero_object, libero_goal, libero_10}
 #   Replace `seed` with one of {195, 196, 197}
@@ -35,4 +47,5 @@ CUDA_VISIBLE_DEVICES=0 uv run --extra cu128 --group libero --python 3.10 \
         --flip_images True \
         --num_denoising_steps_action 5 \
         --num_denoising_steps_future_state 1 \
-        --num_denoising_steps_value 1
+        --num_denoising_steps_value 1 \
+        --save_videos False

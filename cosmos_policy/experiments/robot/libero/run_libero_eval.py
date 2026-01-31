@@ -106,42 +106,6 @@ Usage examples:
 
 """
 
-
-
-######################################## for vscode debug ########################################
-# uv environment will create bug when used with vscode debug
-import importlib.metadata
-import sys
-
-_orig_version = importlib.metadata.version
-_orig_distribution = importlib.metadata.distribution
-
-def _patched_version(distribution_name):
-    aliases = {
-        "transformer_engine_torch", 
-        "transformer-engine-cu12", 
-        "transformer-engine-cu11",
-        "transformer-engine"
-    }
-    if distribution_name in aliases:
-        try:
-            return _orig_version("transformer_engine")
-        except importlib.metadata.PackageNotFoundError:
-            return "2.2"
-    return _orig_version(distribution_name)
-
-importlib.metadata.version = _patched_version
-
-def _patched_distribution(distribution_name):
-    aliases = {"transformer_engine_torch", "transformer-engine-cu12", "transformer-engine"}
-    if distribution_name in aliases:
-        return _orig_distribution("transformer_engine")
-    return _orig_distribution(distribution_name)
-
-importlib.metadata.distribution = _patched_distribution
-######################################## for vscode debug ########################################
-
-
 import json
 import logging
 import os
@@ -159,6 +123,7 @@ import torch
 import torch.multiprocessing as mp
 import tqdm
 import wandb
+from datetime import datetime  
 from libero.libero import benchmark
 
 from cosmos_policy.experiments.robot.cosmos_utils import (
@@ -301,7 +266,7 @@ class PolicyEvalConfig:
     jpeg_compress: bool = True                                           # If True, apply JPEG compression to images before saving
 
     # fmt: on
-
+    save_videos: bool = True  # Whether to save rollout videos
 
 # Set up logging
 logging.basicConfig(
@@ -751,14 +716,15 @@ def run_task(
             total_successes += 1
 
         # Save replay video
-        save_rollout_video(
-            replay_images,
-            total_episodes,
-            success=success,
-            task_description=task_description,
-            log_file=log_file,
-            save_dir=cfg.local_log_dir,
-        )
+        if cfg.save_videos:
+            save_rollout_video(
+                replay_images,
+                total_episodes,
+                success=success,
+                task_description=task_description,
+                log_file=log_file,
+                save_dir=cfg.local_log_dir,
+            )
 
         # Save replay video with future image predictions included
         future_primary_image_predictions = None
@@ -767,20 +733,22 @@ def run_task(
         future_wrist_image_predictions = None
         if cfg.use_wrist_image:
             future_wrist_image_predictions = [x["future_wrist_image"] for x in future_image_predictions_list]
-        save_rollout_video_with_future_image_predictions(
-            replay_images,
-            total_episodes,
-            success=success,
-            task_description=task_description,
-            chunk_size=cfg.chunk_size,
-            num_open_loop_steps=cfg.num_open_loop_steps,
-            rollout_wrist_images=replay_wrist_images,
-            future_primary_image_predictions=future_primary_image_predictions,
-            future_wrist_image_predictions=future_wrist_image_predictions,
-            show_diff=False,
-            log_file=log_file,
-            log_dir=cfg.local_log_dir,
-        )
+
+        if cfg.save_videos:
+            save_rollout_video_with_future_image_predictions(
+                replay_images,
+                total_episodes,
+                success=success,
+                task_description=task_description,
+                chunk_size=cfg.chunk_size,
+                num_open_loop_steps=cfg.num_open_loop_steps,
+                rollout_wrist_images=replay_wrist_images,
+                future_primary_image_predictions=future_primary_image_predictions,
+                future_wrist_image_predictions=future_wrist_image_predictions,
+                show_diff=False,
+                log_file=log_file,
+                log_dir=cfg.local_log_dir,
+            )
 
         # Save episodic data (in data collection mode)
         if cfg.data_collection and collected_data is not None:
@@ -936,6 +904,7 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
 
     # Start evaluation
     total_episodes, total_successes = 0, 0
+    start_time = time.time() 
     for task_id in tqdm.tqdm(range(num_tasks)):
         (
             total_episodes,
@@ -954,6 +923,8 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
             log_file,
         )
 
+    total_time = time.time() - start_time
+    log_message(f"Total evaluation time: {total_time:.2f} seconds", log_file)
     # Calculate final success rate
     final_success_rate = float(total_successes) / float(total_episodes) if total_episodes > 0 else 0
 

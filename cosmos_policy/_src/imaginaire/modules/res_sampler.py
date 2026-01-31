@@ -244,7 +244,7 @@ def differential_equation_solver(
         Samples from the differential equation.
 
         Args:
-            input_xT_B_StateShape: Input tensor with shape [B, StateShape].
+            input_xT_B_StateShape: Input tensor with shape [B, StateShape]. 这就是噪声
 
         Returns:
             Output tensor with shape [B, StateShape].

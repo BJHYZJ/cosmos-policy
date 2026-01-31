@@ -19,7 +19,7 @@ import logging
 import os
 import time
 from typing import Any, Optional, Tuple
-
+from datetime import datetime  
 import numpy as np
 import torch
 import wandb
@@ -129,6 +129,7 @@ def log_message(message: str, log_file=None):
         message: Message to log
         log_file: Optional file handle to write to
     """
+    message = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}"
     print(message)
     logger.info(message)
     if log_file:

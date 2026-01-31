@@ -749,14 +749,14 @@ class CosmosPolicyDiffusionModel(BaseDiffusionModel):
             n_sample = data_batch[input_key].shape[0]
         if state_shape is None:
             _T, _H, _W = data_batch[input_key].shape[-3:]
-            state_shape = [
+            state_shape = [  # [16, 9, 28, 28]
                 self.config.state_ch,
                 self.tokenizer.get_latent_num_frames(_T),
                 _H // self.tokenizer.spatial_compression_factor,
                 _W // self.tokenizer.spatial_compression_factor,
             ]
 
-        if return_orig_clean_latent_frames:
+        if return_orig_clean_latent_frames:  #  创建一个去噪函数并返回
             x0_fn, orig_clean_latent_frames = self.get_x0_fn_from_batch(
                 data_batch,
                 guidance,
@@ -803,10 +803,10 @@ class CosmosPolicyDiffusionModel(BaseDiffusionModel):
         if x_sigma_max is None:
             x_sigma_max = (
                 misc.arch_invariant_rand(
-                    (n_sample,) + tuple(state_shape),
-                    torch.float32,
-                    self.tensor_kwargs["device"],
-                    seed,
+                    shape=(n_sample,) + tuple(state_shape),
+                    dtype=torch.float32,
+                    device=self.tensor_kwargs["device"],
+                    seed=seed,
                 )
                 * self.sde.sigma_max
                 * sigma_max_variance_scale
@@ -820,12 +820,12 @@ class CosmosPolicyDiffusionModel(BaseDiffusionModel):
         if sigma_max is None:
             sigma_max = self.sde.sigma_max
         samples = self.sampler(
-            x0_fn,
-            x_sigma_max,
-            num_steps=num_steps,
-            sigma_max=sigma_max * sigma_max_variance_scale,
-            sigma_min=self.sde.sigma_min * sigma_min_variance_scale,
-            solver_option=solver_option,
+            x0_fn=x0_fn,  # 构建的具有conditon的去噪函数
+            x_sigma_max=x_sigma_max,  # 初始噪声张量
+            num_steps=num_steps,  # 5 steps
+            sigma_max=sigma_max * sigma_max_variance_scale,  # 80 * 1
+            sigma_min=self.sde.sigma_min * sigma_min_variance_scale,  # 4 * 1
+            solver_option=solver_option,  # 2ab
         )
         if self.net.is_context_parallel_enabled:
             samples = cat_outputs_cp(samples, seq_dim=2, cp_group=self.get_context_parallel_group())

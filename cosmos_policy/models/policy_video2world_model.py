@@ -618,7 +618,7 @@ class CosmosPolicyVideo2WorldModel(CosmosPolicyDiffusionModel):
             )
             x0 = previous_generated_latent.clone()
         else:
-            _, x0, _ = self.get_data_and_condition(data_batch)
+            _, x0, _ = self.get_data_and_condition(data_batch)  # TODO, get_data_and_condition做了inject但是没有用，是不是可以mask掉
         # override condition with inference mode; num_conditional_frames used Here!
         condition = condition.set_video_condition(
             gt_frames=x0,
@@ -765,7 +765,7 @@ class CosmosPolicyVideo2WorldModel(CosmosPolicyDiffusionModel):
             return raw_x0
 
         if return_orig_clean_latent_frames:
-            return x0_fn, condition.orig_gt_frames
+            return x0_fn, condition.orig_gt_frames  # orig_gt_frames是未被注入本体感知数据的vae encoder的输出
         else:
             return x0_fn
 
