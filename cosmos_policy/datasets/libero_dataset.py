@@ -132,7 +132,11 @@ class LIBERODataset(Dataset):
         hdf5_files = get_hdf5_files(data_dir)
 
         # In debug mode, only load the first demo
-        if os.environ.get("DEBUGGING", "False").lower() == "true":
+        # if os.environ.get("DEBUGGING", "False").lower() == "true":
+        #     hdf5_files = hdf5_files[:1]
+
+        is_debug = os.environ.get("DEBUGGING", "False").lower() == "true"
+        if is_debug:
             hdf5_files = hdf5_files[:1]
 
         # Placeholder list for rollout files (may be empty)
@@ -158,81 +162,123 @@ class LIBERODataset(Dataset):
         #   }
         # }
         self.data = {}
-        self.rollout_episode_metadata = {}  # For lazy loading: episode_idx -> metadata dict
         self.num_episodes = 0
         self.num_steps = 0
+        self.unique_commands = set()
+
+        self.rollout_episode_metadata = {}  # For lazy loading: episode_idx -> metadata dict
         self.rollout_num_episodes = 0
         self.rollout_num_steps = 0
-        self.unique_commands = set()
+        
+        self.data_cache_dir = os.path.join(self.data_dir, "data_processed.pkl")
 
         # Global step mapping from task suite name to list[global_step_idx]
         # Populated later in `_build_step_index_mapping()`
         self._suite_to_step_indices = {}
+        
+        cache_loaded = False
         if self.demonstration_sampling_prob > 0:  # Only load demos if they are used
-            for file in tqdm(hdf5_files):
-                with h5py.File(file, "r") as f:
-                    # Get demo keys and sort them numerically ("demo_0", "demo_1", ...)
-                    demo_keys_list = list(f["data"].keys())
-                    sorted_demo_keys = sorted(demo_keys_list, key=lambda x: int(x.split("_")[1]))
+            if not is_debug and os.path.exists(self.data_cache_dir):
+                print(f"Loading dataset from cache: {self.data_cache_dir}")
+                try:
+                    with open(self.data_cache_dir, "rb") as f:
+                        cached_data = pickle.load(f)
 
-                    for demo_key in tqdm(sorted_demo_keys):
-                        # Determine whether the dataset stores raw RGB frames or JPEG bytes
-                        obs_group = f[f"data/{demo_key}/obs"]
-                        # Agent-view (third-person) images
-                        if "agentview_rgb" in obs_group:
-                            images = obs_group["agentview_rgb"][:]  # (T, H, W, 3) uint8
-                        elif "agentview_rgb_jpeg" in obs_group:
-                            images = decode_jpeg_bytes_dataset(obs_group["agentview_rgb_jpeg"])
-                        else:
-                            raise KeyError("Neither 'agentview_rgb' nor 'agentview_rgb_jpeg' found in HDF5 file.")
-                        # Wrist-mounted camera images
-                        if "eye_in_hand_rgb" in obs_group:
-                            wrist_images = obs_group["eye_in_hand_rgb"][:]
-                        elif "eye_in_hand_rgb_jpeg" in obs_group:
-                            wrist_images = decode_jpeg_bytes_dataset(obs_group["eye_in_hand_rgb_jpeg"])
-                        else:
-                            raise KeyError("Neither 'eye_in_hand_rgb' nor 'eye_in_hand_rgb_jpeg' found in HDF5 file.")
-                        # Actions
-                        actions = f[f"data/{demo_key}/actions"][:].astype(
-                            np.float32
-                        )  # (episode_len, action_dim=7), float32
-                        # Proprio states
-                        proprio = f[f"data/{demo_key}/robot_states"][:].astype(
-                            np.float32
-                        )  # (episode_len, proprio_dim=9), float32
-                        # Compute language instruction
-                        raw_file_string = os.path.basename(file).split("/")[-1]
-                        words = raw_file_string[:-10].split("_")
-                        command = ""
-                        for w in words:
-                            if "SCENE" in w:
-                                command = ""
-                                continue
-                            command = command + w + " "
-                        command = command[:-1]
-                        self.unique_commands.add(command)
-                        num_steps = len(images)
-                        # Add value function returns if applicable
-                        if self.return_value_function_returns:
-                            returns = compute_monte_carlo_returns(num_steps, terminal_reward=1.0, gamma=self.gamma)
-                        # Add entry to dataset dict
-                        self.data[self.num_episodes] = dict(
-                            images=images,
-                            wrist_images=wrist_images,
-                            proprio=proprio,
-                            actions=actions,
-                            command=command,
-                            num_steps=num_steps,
-                            suite=os.path.relpath(file, self.data_dir).split(os.sep)[
-                                0
-                            ],  # Task suite folder name (e.g. libero_spatial_no_noops_rerendered)
-                            returns=returns.copy() if self.return_value_function_returns else None,
-                        )
-                        # Update number of episodes
-                        self.num_episodes += 1
-                        # Update number of steps
-                        self.num_steps += num_steps
+                    if self.return_value_function_returns and cached_data.get("gamma") != self.gamma:
+                        print("Gamma changed, re-processing returns...")
+                        for ep_idx in cached_data["data"]:
+                            cached_data["data"][ep_idx]["returns"] = compute_monte_carlo_returns(
+                                cached_data["data"][ep_idx]["num_steps"], 1.0, self.gamma
+                            )
+                    assert cached_data.get("num_files") == len(hdf5_files), "Number of files changed..."
+                    self.data = cached_data["data"]  
+                    self.num_episodes = cached_data["num_episodes"]  
+                    self.num_steps = cached_data["num_steps"]
+                    self.unique_commands = cached_data["unique_commands"]
+                    cache_loaded = True
+                    print("Cache loaded successfully.")
+                except Exception as e:
+                    print(f"Cache corrupted ({e}), re-processing...")
 
+            if not cache_loaded:
+                print("Processing HDF5 files...")
+                for file in tqdm(hdf5_files):
+                    with h5py.File(file, "r") as f:
+                        # Get demo keys and sort them numerically ("demo_0", "demo_1", ...)
+                        demo_keys_list = list(f["data"].keys())
+                        sorted_demo_keys = sorted(demo_keys_list, key=lambda x: int(x.split("_")[1]))
+
+                        for demo_key in tqdm(sorted_demo_keys):
+                            # Determine whether the dataset stores raw RGB frames or JPEG bytes
+                            obs_group = f[f"data/{demo_key}/obs"]
+                            # Agent-view (third-person) images
+                            if "agentview_rgb" in obs_group:
+                                images = obs_group["agentview_rgb"][:]  # (T, H, W, 3) uint8
+                            elif "agentview_rgb_jpeg" in obs_group:
+                                images = decode_jpeg_bytes_dataset(obs_group["agentview_rgb_jpeg"])
+                            else:
+                                raise KeyError("Neither 'agentview_rgb' nor 'agentview_rgb_jpeg' found in HDF5 file.")
+                            # Wrist-mounted camera images
+                            if "eye_in_hand_rgb" in obs_group:
+                                wrist_images = obs_group["eye_in_hand_rgb"][:]
+                            elif "eye_in_hand_rgb_jpeg" in obs_group:
+                                wrist_images = decode_jpeg_bytes_dataset(obs_group["eye_in_hand_rgb_jpeg"])
+                            else:
+                                raise KeyError("Neither 'eye_in_hand_rgb' nor 'eye_in_hand_rgb_jpeg' found in HDF5 file.")
+                            # Actions
+                            actions = f[f"data/{demo_key}/actions"][:].astype(
+                                np.float32
+                            )  # (episode_len, action_dim=7), float32
+                            # Proprio states
+                            proprio = f[f"data/{demo_key}/robot_states"][:].astype(
+                                np.float32
+                            )  # (episode_len, proprio_dim=9), float32
+                            # Compute language instruction
+                            raw_file_string = os.path.basename(file).split("/")[-1]
+                            words = raw_file_string[:-10].split("_")
+                            command = ""
+                            for w in words:
+                                if "SCENE" in w:
+                                    command = ""
+                                    continue
+                                command = command + w + " "
+                            command = command[:-1]
+                            self.unique_commands.add(command)
+                            num_steps = len(images)
+                            # Add value function returns if applicable
+                            if self.return_value_function_returns:
+                                returns = compute_monte_carlo_returns(num_steps, terminal_reward=1.0, gamma=self.gamma)
+                            # Add entry to dataset dict
+                            self.data[self.num_episodes] = dict(
+                                images=images,
+                                wrist_images=wrist_images,
+                                proprio=proprio,
+                                actions=actions,
+                                command=command,
+                                num_steps=num_steps,
+                                suite=os.path.relpath(file, self.data_dir).split(os.sep)[
+                                    0
+                                ],  # Task suite folder name (e.g. libero_spatial_no_noops_rerendered)
+                                returns=returns.copy() if self.return_value_function_returns else None,
+                            )
+                            # Update number of episodes
+                            self.num_episodes += 1
+                            # Update number of steps
+                            self.num_steps += num_steps
+
+                if not is_debug:
+                    cached_data = {  
+                        "data": self.data,  
+                        "num_episodes": self.num_episodes,  
+                        "num_steps": self.num_steps,  
+                        "unique_commands": self.unique_commands,
+                        "gamma": self.gamma,
+                        "num_files": len(hdf5_files)
+                    }
+                    with open(self.data_cache_dir, "wb") as f:  
+                        pickle.dump(cached_data, f)
+                    print("Cache saved.")
+                                
         # Build mapping from global step index to episode step
         self._build_step_index_mapping()
 

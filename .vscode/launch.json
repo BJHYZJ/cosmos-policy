@@ -89,7 +89,7 @@
                 "trainer.grad_accum_iter=8"
             ],
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": true
         },
         {
             "name": "Debug Cosmos Single GPU",
@@ -112,7 +112,7 @@
                 "trainer.grad_accum_iter=8"
             ],
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": true
         }
     ]
 }
