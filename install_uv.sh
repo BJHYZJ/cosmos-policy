@@ -11,10 +11,26 @@ rm -rf cuda_12.8.0_570.86.10_linux.run
 
 # 3. install environment
 UV_PYTHON=python3.10 ./bin/uv_lock.sh .
-
+uv pip install -e .
 ## libero
 uv sync --extra cu128 --group libero --python 3.10
 
 
 ## robocasa
 uv sync --extra cu128 --group robocasa  --python 3.10
+uv pip install -e .
+### Then, clone the RoboCasa repo, install the package, and download assets
+cd ../  # we suggest install robocasa in the outside of the repo
+git clone https://github.com/robocasa/robocasa.git  # test in `756598a`
+cd robocasa
+### remove numpy version assert in `robocasa/robocasa/__init__.py`
+sed -i '311,318s/^/# /' robocasa/__init__.py
+source ../cosmos-policy/.venv/bin/activate
+
+uv pip install -e .
+uv pip install pre-commit; pre-commit install
+uv run --extra cu128 --group robocasa --python 3.10 robocasa/scripts/download_kitchen_assets.py
+
+# (Optional) download the dataset
+cd /path/to/your/dataset_path
+hf download nvidia/RoboCasa-Cosmos-Policy --repo-type dataset --local-dir RoboCasa-Cosmos-Policy

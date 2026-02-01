@@ -1,15 +1,6 @@
 #!/bin/bash
 source ./env_config.sh
 
-echo $HF_ENDPOINT
-echo $TRANSFORMERS_CACHE
-echo $HF_ENDPOINT
-echo $HF_TOKEN
-
-echo $EGL_DEVICE_ID
-echo $MUJOCO_GL
-echo $PYOPENGL_PLATFORM
-
 # *** Main checkpoint: 98.5% success rate ***
 #   Replace `task_suite_name` with one of {libero_spatial, libero_object, libero_goal, libero_10}
 #   Replace `seed` with one of {195, 196, 197}

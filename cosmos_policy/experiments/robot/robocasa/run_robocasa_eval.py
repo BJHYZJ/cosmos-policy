@@ -61,6 +61,40 @@ Usage examples:
 
 """
 
+######################################## for vscode debug ########################################
+# uv environment will create bug when used with vscode debug
+import importlib.metadata
+import sys
+
+_orig_version = importlib.metadata.version
+_orig_distribution = importlib.metadata.distribution
+
+def _patched_version(distribution_name):
+    aliases = {
+        "transformer_engine_torch", 
+        "transformer-engine-cu12", 
+        "transformer-engine-cu11",
+        "transformer-engine"
+    }
+    if distribution_name in aliases:
+        try:
+            return _orig_version("transformer_engine")
+        except importlib.metadata.PackageNotFoundError:
+            return "2.2"
+    return _orig_version(distribution_name)
+
+importlib.metadata.version = _patched_version
+
+def _patched_distribution(distribution_name):
+    aliases = {"transformer_engine_torch", "transformer-engine-cu12", "transformer-engine"}
+    if distribution_name in aliases:
+        return _orig_distribution("transformer_engine")
+    return _orig_distribution(distribution_name)
+
+importlib.metadata.distribution = _patched_distribution
+######################################## for vscode debug ########################################
+
+
 import ast
 import multiprocessing as mp
 import os
@@ -74,9 +108,10 @@ from typing import Optional
 import draccus
 import h5py
 import numpy as np
-import robosuite
 import torch
 import wandb
+import robocasa
+import robosuite
 from robocasa.utils.dataset_registry import MULTI_STAGE_TASK_DATASETS, SINGLE_STAGE_TASK_DATASETS
 
 from cosmos_policy.experiments.robot.cosmos_utils import (
@@ -237,6 +272,7 @@ class PolicyEvalConfig:
     jpeg_compress: bool = True                                           # If True, apply JPEG compression to images before saving
 
     # fmt: on
+    save_videos: bool = True  # Whether to save rollout videos
 
 
 def validate_config(cfg: PolicyEvalConfig) -> None:
@@ -857,18 +893,19 @@ def run_task(
         if success:
             total_successes += 1
         # Save rollout video
-        rollout_data_dir = os.path.join(cfg.local_log_dir, "rollout_data", f"{task_name}--{DATE_TIME}")
-        os.makedirs(rollout_data_dir, exist_ok=True)
-        save_rollout_video(
-            replay_primary_images,
-            replay_secondary_images,
-            replay_wrist_images,
-            episode_idx,
-            success=success,
-            task_description=task_description,
-            rollout_data_dir=rollout_data_dir,
-            log_file=log_file,
-        )
+        if cfg.save_videos:
+            rollout_data_dir = os.path.join(cfg.local_log_dir, "rollout_data", f"{task_name}--{DATE_TIME}")
+            os.makedirs(rollout_data_dir, exist_ok=True)
+            save_rollout_video(
+                replay_primary_images,
+                replay_secondary_images,
+                replay_wrist_images,
+                episode_idx,
+                success=success,
+                task_description=task_description,
+                rollout_data_dir=rollout_data_dir,
+                log_file=log_file,
+            )
         # Save rollout video with future image predictions
         if len(future_image_predictions_list) > 0:
             # Extract future predictions from the list
@@ -895,6 +932,7 @@ def run_task(
                 future_primary_image_predictions is not None
                 and future_secondary_image_predictions is not None
                 and future_wrist_image_predictions is not None
+                and cfg.save_videos
             ):
                 save_rollout_video_with_future_image_predictions(
                     replay_primary_images,

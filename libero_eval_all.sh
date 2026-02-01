@@ -11,6 +11,7 @@ EMB_PATH="nvidia/Cosmos-Policy-LIBERO-Predict2-2B/libero_t5_embeddings.pkl"
 
 # Hyperparameters
 CHUNK_SIZE=16
+OPEN_LOOP_STEPS=16
 STEPS_ACT=5
 STEPS_FUTURE=1
 STEPS_VALUE=1
@@ -44,7 +45,7 @@ run_task() {
             --t5_text_embeddings_path "$EMB_PATH" \
             --trained_with_image_aug True \
             --chunk_size "$CHUNK_SIZE" \
-            --num_open_loop_steps "$CHUNK_SIZE" \
+            --num_open_loop_steps "$OPEN_LOOP_STEPS" \
             --task_suite_name "$task" \
             --local_log_dir "$local_dir" \
             --randomize_seed False \
