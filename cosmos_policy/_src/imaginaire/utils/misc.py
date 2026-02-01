@@ -372,7 +372,8 @@ class TrainingTimer:
     def compute_average_results(self) -> dict[str, float]:
         results = dict()
         for key, value_list in self.results.items():
-            results[key] = sum(value_list) / len(value_list)
+            # results[key] = sum(value_list) / len(value_list)
+            results[key] = sum(value_list) / len(value_list) if value_list else 0.0  # TODO (edit by zhijie)
         return results
 
 

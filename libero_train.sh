@@ -8,4 +8,5 @@ uv run --extra cu128 --group libero --python 3.10 \
     torchrun --nproc_per_node=8 --master_port=12341 -m cosmos_policy.scripts.train \
     --config=cosmos_policy/config/config.py -- \
     experiment="cosmos_predict2_2b_480p_libero" \
-    trainer.grad_accum_iter=8
+    trainer.grad_accum_iter=8 \
+    dataloader_train.batch_size=15

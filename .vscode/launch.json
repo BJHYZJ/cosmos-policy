@@ -109,7 +109,8 @@
                 "--config=cosmos_policy/config/config.py",
                 "--",
                 "experiment=cosmos_predict2_2b_480p_libero",
-                "trainer.grad_accum_iter=8"
+                "trainer.grad_accum_iter=8",
+                "dataloader_train.batch_size=15"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
