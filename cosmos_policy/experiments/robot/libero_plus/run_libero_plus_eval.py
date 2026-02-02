@@ -31,6 +31,8 @@ def _patched_distribution(distribution_name):
 importlib.metadata.distribution = _patched_distribution
 ######################################## for vscode debug ########################################
 
+import sys
+# sys.path.append("./LIBERO-plus")
 
 import json
 import logging
@@ -49,8 +51,9 @@ import torch
 import torch.multiprocessing as mp
 import tqdm
 import wandb
-from datetime import datetime  
+from datetime import datetime
 from libero.libero import benchmark
+
 
 from cosmos_policy.experiments.robot.cosmos_utils import (
     WorkerPoolManager,
@@ -88,29 +91,30 @@ FUTURE_STATE_START_LATENT_IDX, FUTURE_STATE_END_LATENT_IDX = 5, 7
 
 # Define task suite constants
 class TaskSuite(str, Enum):
-    # LIBERO_SPATIAL = "libero_spatial"
-    # LIBERO_OBJECT = "libero_object"
-    # LIBERO_GOAL = "libero_goal"
-    # LIBERO_10 = "libero_10"
+    LIBERO_SPATIAL = "libero_spatial"
+    LIBERO_OBJECT = "libero_object"
+    LIBERO_GOAL = "libero_goal"
+    LIBERO_10 = "libero_10"
     # LIBERO_90 = "libero_90"
-    LIBERO_PLUS = "libero_mix"
+    # LIBERO_100 = "libero_100"
+    # LIBERO_MIX = "libero_mix"
 
 
 # Define max steps for each task suite
 TASK_MAX_STEPS = {
-    # TaskSuite.LIBERO_SPATIAL: 220,  # longest training demo has 193 steps
-    # TaskSuite.LIBERO_OBJECT: 280,  # longest training demo has 254 steps
-    # TaskSuite.LIBERO_GOAL: 300,  # longest training demo has 270 steps
-    # TaskSuite.LIBERO_10: 520,  # longest training demo has 505 steps
+    TaskSuite.LIBERO_SPATIAL: 220,  # longest training demo has 193 steps
+    TaskSuite.LIBERO_OBJECT: 280,  # longest training demo has 254 steps
+    TaskSuite.LIBERO_GOAL: 300,  # longest training demo has 270 steps
+    TaskSuite.LIBERO_10: 520,  # longest training demo has 505 steps
     # TaskSuite.LIBERO_90: 400,  # longest training demo has 373 steps
-    TaskSuite.LIBERO_PLUS: 550
+    # TaskSuite.LIBERO_MIX: 550,
 }
 
 
 @dataclass
 class PolicyEvalConfig:
     # fmt: off
-    suite: str = "libero"                                                # Evaluation suite name
+    suite: str = "libero"                                                # Evaluation suite name, actually is libero_plus
 
     #################################################################################################################
     # Cosmos Policy-specific parameters
@@ -755,7 +759,7 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
     init_t5_text_embeddings_cache(cfg.t5_text_embeddings_path)
 
     # Load Cosmos Policy dataset stats
-    dataset_stats = load_dataset_stats(cfg.dataset_stats_path)
+    dataset_stats = load_dataset_stats(cfg.dataset_stats_path)  # TODO (zhijie), libero plus能用libero数据的stats吗？
 
     # If using parallel inference, initialize worker pool
     worker_pool = None

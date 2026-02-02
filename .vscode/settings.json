@@ -1,0 +1,8 @@
+{
+    "python.analysis.extraPaths": [
+        "./LIBERO-plus"
+    ],
+    "python.autoComplete.extraPaths": [
+        "./LIBERO-plus"
+    ]
+}

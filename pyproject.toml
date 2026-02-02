@@ -118,7 +118,19 @@ libero = [
   "easydict",
   "gym",
   "imageio[ffmpeg]",
-  "libero",
+  "libero",   # libero
+  "mujoco==3.3.2",
+]
+libero_plus = [
+  "robosuite==1.4.1",
+  "bddl",
+  "future",
+  "cloudpickle",
+  "draccus",
+  "easydict",
+  "gym",
+  "imageio[ffmpeg]",
+  "libero",  # local libero (LIBERO-plus), need to use: libero = { path = "./LIBERO-plus", editable = true }
   "mujoco==3.3.2",
 ]
 aloha = [
@@ -222,11 +234,19 @@ conflicts = [
     {group="libero"},
   ],
   [
+    {group ="aloha"},
+    {group="libero_plus"},
+  ],
+  [
+    {group="robocasa"},
+    {group="libero_plus"},
+  ],
+  [
     {group="aloha"},
     {group="robocasa"},
   ]
 ]
-override-dependencies = ["numpy>=2.0.0"]
+override-dependencies = ["numpy>=2.0.0", "pynput; sys_platform == 'not_a_real_platform'", "cffi==1.17.1"]
 
 [tool.uv.sources]
 # https://docs.astral.sh/uv/guides/integration/pytorch/#configuring-accelerators-with-optional-dependencies
@@ -261,6 +281,7 @@ xformers = [
   { index = "cosmos-cu128-torch27", extra = "cu128" },
   { index = "cosmos-cu130-torch29", extra = "cu130" },
 ]
+libero = { path = "./LIBERO-plus", editable = true }
 
 [[tool.uv.index]]
 name = "cosmos-cu128-torch27"
