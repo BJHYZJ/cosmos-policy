@@ -34,3 +34,13 @@ uv run --extra cu128 --group robocasa --python 3.10 robocasa/scripts/download_ki
 # (Optional) download the dataset
 cd /path/to/your/dataset_path
 hf download nvidia/RoboCasa-Cosmos-Policy --repo-type dataset --local-dir RoboCasa-Cosmos-Policy
+
+
+
+
+## libero plus
+uv sync --extra cu128 --group libero --python 3.10
+# git clone https://github.com/sylvestf/LIBERO-plus.git
+# cd LIBERO-plus
+# uv pip install -e .
+# uv pip install -r extra_requirements.txt
