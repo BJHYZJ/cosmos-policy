@@ -42,7 +42,7 @@ import traceback
 from collections import deque
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 import draccus
 import h5py
@@ -199,6 +199,9 @@ class PolicyEvalConfig:
 
     # fmt: on
     save_videos: bool = True  # Whether to save rollout videos
+
+    # task_id_range for speed up evaluate process
+    task_id_range: List[int] = draccus.field(default_factory=lambda: [0, -1])
 
 # Set up logging
 logging.basicConfig(
@@ -793,6 +796,7 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
         task_identifier=cfg.task_suite_name,
         log_dir=cfg.local_log_dir,
         run_id_note=cfg.run_id_note,
+        task_id_range=cfg.task_id_range,
         use_wandb=cfg.use_wandb,
         wandb_entity=cfg.wandb_entity,
         wandb_project=cfg.wandb_project,
@@ -836,8 +840,21 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
 
     # Start evaluation
     total_episodes, total_successes = 0, 0
-    start_time = time.time() 
-    for task_id in tqdm.tqdm(range(num_tasks)):
+    
+    start_task_id = cfg.task_id_range[0]
+    end_task_id = cfg.task_id_range[1]
+
+    if end_task_id == -1: end_task_id = num_tasks
+    end_task_id = min(end_task_id, num_tasks)
+
+    assert end_task_id > start_task_id, f"Invalid range: start({start_task_id}) must be less than end({end_task_id})"
+    active_range = range(start_task_id, end_task_id)
+    pbar = tqdm.tqdm(range(num_tasks), desc=f"Evaluating [{start_task_id}-{end_task_id}]")
+
+    start_time = time.time()
+    for task_id in pbar:
+        if task_id not in active_range:
+            continue
         (
             total_episodes,
             total_successes,

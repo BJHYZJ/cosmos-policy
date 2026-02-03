@@ -60,7 +60,7 @@ vim ~/.libero/config.yaml
 # download assets
 cd ~/path/to/cosmos-policy/
 wget https://huggingface.co/datasets/Sylvest/LIBERO-plus/resolve/main/assets.zip
-unzip asserts.zip
+unzip assets.zip
 mv inspire/hdd/project/embodied-multimodality/public/syfei/libero_new/release/dataset/LIBERO-plus-0/assets LIBERO-plus/libero/libero/assets
 rm -rf inspire
 rm -rf assets.zip

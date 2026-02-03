@@ -200,7 +200,8 @@
                 "--num_denoising_steps_future_state", "1",
                 "--num_denoising_steps_value", "1",
                 "--save_videos", "True",
-                "--num_trials_per_task", "1"
+                "--num_trials_per_task", "1",
+                "--task_id_range", "[500, 600]"
             ]
         }
     ]

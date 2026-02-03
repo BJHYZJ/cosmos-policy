@@ -67,6 +67,7 @@ def setup_logging(
     log_dir: str,
     run_id_note: Optional[str] = None,
     use_wandb: bool = True,
+    task_id_range: Optional[list] = None,
     wandb_entity: str = "nvidia-dir",
     wandb_project: str = "cosmos_policy_eval",
     extra_wandb_tags: Optional[list] = None,
@@ -98,6 +99,9 @@ def setup_logging(
 
     if run_id_note is not None:
         run_id += f"--{run_id_note}"
+    
+    if task_id_range is not None:
+        run_id += f"--range_{task_id_range}"
 
     # Set up local logging
     os.makedirs(log_dir, exist_ok=True)

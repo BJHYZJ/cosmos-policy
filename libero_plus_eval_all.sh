@@ -64,7 +64,8 @@ run_task() {
             --num_denoising_steps_future_state "$STEPS_FUTURE" \
             --num_denoising_steps_value "$STEPS_VALUE" \
             --save_videos "$SAVE_VIDEO" \
-            --num_trials_per_task 1
+            --num_trials_per_task 1 \
+            --task_id_range [0, -1]
 }
 
 ################################################################################
