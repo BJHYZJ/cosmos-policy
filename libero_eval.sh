@@ -39,4 +39,5 @@ CUDA_VISIBLE_DEVICES=0 uv run --extra cu128 --group libero --python 3.10 \
         --num_denoising_steps_action 5 \
         --num_denoising_steps_future_state 1 \
         --num_denoising_steps_value 1 \
-        --save_videos False
+        --save_videos False \
+        --task_id_range "[2400, -1]"
