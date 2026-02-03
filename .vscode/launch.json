@@ -167,7 +167,7 @@
             "justMyCode": false,
             "envFile": "${workspaceFolder}/.env",
             "env": {
-                "CUDA_VISIBLE_DEVICES": "0",
+                "CUDA_VISIBLE_DEVICES": "7",
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
