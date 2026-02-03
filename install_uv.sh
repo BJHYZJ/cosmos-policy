@@ -52,6 +52,11 @@ touch libero/__init__.py
 uv pip install -e .
 uv pip install -r extra_requirements.txt
 
+# edit your libero config file
+vim ~/.libero/config.yaml
+# change the dataset path to LIBERO-plus local path
+
+
 # download assets
 cd ~/path/to/cosmos-policy/
 wget https://huggingface.co/datasets/Sylvest/LIBERO-plus/resolve/main/assets.zip
