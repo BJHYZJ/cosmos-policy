@@ -28,8 +28,8 @@ run_task() {
     local range_end=$5
     
     local emb_path="./logs/libero_plus_t5_embedding_cache/${task}.pkl"
-    local note="libero_plus_${task}_s${seed}_step${STEPS_ACT}_det${DETERMINISTIC}_range_[${range_start},${range_end}]"
-    local local_dir="./logs/libero_plus/${task}_seed${seed}_range_[${range_start},${range_end}]"
+    local note="libero_plus_${task}_s${seed}_step${STEPS_ACT}_det${DETERMINISTIC}"
+    local local_dir="./logs/libero_plus_test/${task}_seed${seed}"
     
     mkdir -p "$local_dir"
 
@@ -75,17 +75,35 @@ run_task() {
 ################################################################################
 
 
-( run_task 0 libero_10 195 0 1200;   ) &
-( run_task 1 libero_10 195 1200 -1; ) &
+( run_task 0 libero_spatial 195 0 300;    run_task 0 libero_object 195 0 300;    run_task 0 libero_goal 195 0 300;    run_task 0 libero_10 195 0 300;    ) &
+( run_task 1 libero_spatial 195 300 600;  run_task 1 libero_object 195 300 600;  run_task 1 libero_goal 195 300 600;  run_task 1 libero_10 195 300 600;  ) &
+( run_task 2 libero_spatial 195 600 900;  run_task 2 libero_object 195 600 900;  run_task 2 libero_goal 195 600 900;  run_task 2 libero_10 195 600 900;  ) &
+( run_task 3 libero_spatial 195 900 1200; run_task 3 libero_object 195 900 1200; run_task 3 libero_goal 195 900 1200; run_task 3 libero_10 195 900 1200; ) &
+( run_task 4 libero_spatial 195 1200 1500; run_task 4 libero_object 195 1200 1500; run_task 4 libero_goal 195 1200 1500; run_task 4 libero_10 195 1200 1500; ) &
+( run_task 5 libero_spatial 195 1500 1800; run_task 5 libero_object 195 1500 1800; run_task 5 libero_goal 195 1500 1800; run_task 5 libero_10 195 1500 1800; ) &
+( run_task 6 libero_spatial 195 1800 2100; run_task 6 libero_object 195 1800 2100; run_task 6 libero_goal 195 1800 2100; run_task 6 libero_10 195 1800 2100; ) &
+( run_task 7 libero_spatial 195 2100 -1;   run_task 7 libero_object 195 2100 -1;   run_task 7 libero_goal 195 2100 -1;   run_task 7 libero_10 195 2100 -1;   ) &
 
-( run_task 2 libero_goal 195 0 1200; ) &
-( run_task 3 libero_goal 195 1200 -1; ) &
 
-( run_task 4 libero_spatial 195 0 1200; ) & 
-( run_task 5 libero_spatial 195 1200 -1; ) &
+# ( run_task 0 libero_10 195 0 1; ) &
+# ( run_task 1 libero_10 195 100 101; ) &
+# ( run_task 2 libero_goal 195 0 1; ) &
+# ( run_task 3 libero_goal 195 100 101; ) &
+# ( run_task 4 libero_spatial 195 0 1; ) &
+# ( run_task 5 libero_spatial 195 100 101; ) &
+# ( run_task 6 libero_object 195 0 1; ) &
+# ( run_task 7 libero_object 195 100 101; ) &
 
-( run_task 6 libero_object 195 0 1200; ) &
-( run_task 7 libero_object 195 1200 -1; ) &
+
+
+# ( run_task 2 libero_10 195 0 1200; ) &
+# ( run_task 3 libero_10 195 1200 -1; ) &
+# ( run_task 2 libero_goal 195 0 1200; ) &
+# ( run_task 3 libero_goal 195 1200 -1; ) &
+# ( run_task 4 libero_spatial 195 0 1200; ) & 
+# ( run_task 5 libero_spatial 195 1200 -1; ) &
+# ( run_task 6 libero_object 195 0 1200; ) &
+# ( run_task 7 libero_object 195 1200 -1; ) &
 
 
 # ( run_task 0 libero_spatial 195; run_task 0 libero_spatial 196 ) &

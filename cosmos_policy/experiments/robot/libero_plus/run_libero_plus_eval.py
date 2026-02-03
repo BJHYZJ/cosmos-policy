@@ -879,6 +879,8 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
         )
 
     total_time = time.time() - start_time
+    log_message("=" * 60, log_file)
+    log_message("=" * 60, log_file)
     log_message(f"Total evaluation time: {total_time:.2f} seconds", log_file)
     # Calculate final success rate
     final_success_rate = float(total_successes) / float(total_episodes) if total_episodes > 0 else 0
