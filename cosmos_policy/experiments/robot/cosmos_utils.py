@@ -331,7 +331,7 @@ def get_planning_model(cfg, device: str = "cuda"):
     return planning_model, config
 
 
-def init_t5_text_embeddings_cache(t5_text_embeddings_path: str = None, worker_id: int = 0) -> dict:
+def init_t5_text_embeddings_cache(t5_text_embeddings_path: str = None, worker_id: int = 0, wait_forever: bool = False) -> dict:
     """
     Initialize T5 text embeddings cache (for language instructions).
 
@@ -351,6 +351,10 @@ def init_t5_text_embeddings_cache(t5_text_embeddings_path: str = None, worker_id
     if t5_text_embeddings_path is not None:
         t5_text_embeddings_path = resolve_path(t5_text_embeddings_path)
 
+    wait_time = 30
+    if wait_forever:
+        wait_time = -1
+
     # Preload from saved embeddings file if it exists
     if (
         t5_text_embeddings_path is not None
@@ -359,7 +363,7 @@ def init_t5_text_embeddings_cache(t5_text_embeddings_path: str = None, worker_id
     ):
         # Use file lock to prevent reading while another process is writing
         lock_path = t5_text_embeddings_path + ".lock"
-        lock = FileLock(lock_path, timeout=30)
+        lock = FileLock(lock_path, timeout=wait_time)
         try:
             with lock:
                 with open(t5_text_embeddings_path, "rb") as file:

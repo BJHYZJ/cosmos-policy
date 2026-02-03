@@ -203,6 +203,9 @@ class PolicyEvalConfig:
     # task_id_range for speed up evaluate process
     task_id_range: List[int] = draccus.field(default_factory=lambda: [0, -1])
 
+    # wait lock to avoid dead terminal
+    wait_forever: bool = task_id_range != [0, -1]
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
@@ -759,7 +762,7 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
     set_seed_everywhere(cfg.seed)
 
     # Initialize T5 text embeddings cache
-    init_t5_text_embeddings_cache(cfg.t5_text_embeddings_path)
+    init_t5_text_embeddings_cache(cfg.t5_text_embeddings_path, wait_forever=cfg.wait_forever)
 
     # Load Cosmos Policy dataset stats
     dataset_stats = load_dataset_stats(cfg.dataset_stats_path)  # TODO (zhijie), libero plus能用libero数据的stats吗？
