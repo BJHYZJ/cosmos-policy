@@ -183,7 +183,7 @@
                 "--trained_with_image_aug", "True",
                 "--chunk_size", "16",
                 "--num_open_loop_steps", "16",
-                "--task_suite_name", "libero_spatial",
+                "--task_suite_name", "libero_object",
                 "--local_log_dir", "./logs/libero_plus/test",
                 "--randomize_seed", "False",
                 "--data_collection", "False",
@@ -201,7 +201,7 @@
                 "--num_denoising_steps_value", "1",
                 "--save_videos", "True",
                 "--num_trials_per_task", "1",
-                "--task_id_range", "[1532, 1800]"
+                "--task_id_range", "[2076, 2100]"
             ]
         }
     ]
