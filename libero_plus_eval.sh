@@ -19,11 +19,11 @@ CUDA_VISIBLE_DEVICES=0 uv run --extra cu128 --group libero_plus --python 3.10 \
         --normalize_proprio True \
         --unnormalize_actions True \
         --dataset_stats_path nvidia/Cosmos-Policy-LIBERO-Predict2-2B/libero_dataset_statistics.json \
-        --t5_text_embeddings_path "./logs/libero_plus_t5_embedding_cache/libero_spatial.pkl" \
+        --t5_text_embeddings_path "./logs/libero_plus_t5_embedding_cache/libero_10.pkl" \
         --trained_with_image_aug True \
         --chunk_size 16 \
         --num_open_loop_steps 16 \
-        --task_suite_name libero_spatial \
+        --task_suite_name libero_10 \
         --local_log_dir ./logs/libero_plus/test \
         --randomize_seed False \
         --data_collection False \
@@ -40,4 +40,5 @@ CUDA_VISIBLE_DEVICES=0 uv run --extra cu128 --group libero_plus --python 3.10 \
         --num_denoising_steps_future_state 1 \
         --num_denoising_steps_value 1 \
         --save_videos False \
-        --num_trials_per_task 1
+        --num_trials_per_task 1 \
+        --task_id_range "[1604, 1800]"
