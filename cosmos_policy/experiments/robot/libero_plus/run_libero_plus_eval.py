@@ -606,7 +606,12 @@ def run_task(
     initial_states, all_initial_states = load_initial_states(cfg, task_suite, task_id, log_file)
 
     # Initialize environment and get task description
-    env, task_description = get_libero_env(task, cfg.model_family, resolution=cfg.env_img_res)
+    try:
+        env, task_description = get_libero_env(task, cfg.model_family, resolution=cfg.env_img_res)
+    except Exception as e:
+        log_message(f"FAILED TO INITIALIZE TASK {task_id}: {e}", log_file)
+        # total_episodes += cfg.num_trials_per_task
+        return total_episodes, total_successes
 
     # Start episodes
     task_episodes, task_successes = 0, 0

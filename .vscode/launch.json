@@ -167,7 +167,7 @@
             "justMyCode": false,
             "envFile": "${workspaceFolder}/.env",
             "env": {
-                "CUDA_VISIBLE_DEVICES": "5",
+                "CUDA_VISIBLE_DEVICES": "6",
                 "PYTHONPATH": "${workspaceFolder}"
             },
             "args": [
@@ -179,7 +179,7 @@
                 "--normalize_proprio", "True",
                 "--unnormalize_actions", "True",
                 "--dataset_stats_path", "nvidia/Cosmos-Policy-LIBERO-Predict2-2B/libero_dataset_statistics.json",
-                "--t5_text_embeddings_path", "./logs/libero_plus_t5_embedding_cache/libero_spatial.pkl",
+                "--t5_text_embeddings_path", "./logs/libero_plus_t5_embedding_cache/libero_object.pkl",
                 "--trained_with_image_aug", "True",
                 "--chunk_size", "16",
                 "--num_open_loop_steps", "16",
