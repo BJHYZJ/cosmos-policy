@@ -206,6 +206,8 @@ class PolicyEvalConfig:
     # wait lock to avoid dead terminal
     wait_forever: bool = task_id_range != [0, -1]
 
+    task_classification_path: str = "LIBERO-plus/libero/libero/benchmark/task_classification.json"
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
@@ -214,6 +216,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+def get_task_category(cfg) -> List:
+    with open(cfg.task_classification_path, "r") as f:
+        sub_task_classification = json.load(f)[cfg.task_suite_name]
+    task_categories = [sub_task_classification[idx]["category"] for idx in range(len(sub_task_classification))]
+    return task_categories
 
 def validate_config(cfg: PolicyEvalConfig) -> None:
     """Validate configuration parameters."""
@@ -589,6 +597,7 @@ def run_task(
     cfg: PolicyEvalConfig,
     task_suite,
     task_id: int,
+    category: str,
     model,
     planning_model,
     dataset_stats,
@@ -658,26 +667,29 @@ def run_task(
             task_successes += 1
             total_successes += 1
 
-        # Save replay video
+        # Save videos
         if cfg.save_videos:
+            task_info_language = f"{task_id}_{category}"
+
+            # Save replay video
             save_rollout_video(
                 replay_images,
                 total_episodes,
                 success=success,
                 task_description=task_description,
+                task_info_language=task_info_language,
                 log_file=log_file,
                 save_dir=cfg.local_log_dir,
             )
 
-        # Save replay video with future image predictions included
-        future_primary_image_predictions = None
-        if cfg.use_third_person_image:
-            future_primary_image_predictions = [x["future_image"] for x in future_image_predictions_list]
-        future_wrist_image_predictions = None
-        if cfg.use_wrist_image:
-            future_wrist_image_predictions = [x["future_wrist_image"] for x in future_image_predictions_list]
+            # Save replay video with future image predictions included
+            future_primary_image_predictions = None
+            if cfg.use_third_person_image:
+                future_primary_image_predictions = [x["future_image"] for x in future_image_predictions_list]
+            future_wrist_image_predictions = None
+            if cfg.use_wrist_image:
+                future_wrist_image_predictions = [x["future_wrist_image"] for x in future_image_predictions_list]
 
-        if cfg.save_videos:
             save_rollout_video_with_future_image_predictions(
                 replay_images,
                 total_episodes,
@@ -689,6 +701,7 @@ def run_task(
                 future_primary_image_predictions=future_primary_image_predictions,
                 future_wrist_image_predictions=future_wrist_image_predictions,
                 show_diff=False,
+                task_info_language=task_info_language,
                 log_file=log_file,
                 log_dir=cfg.local_log_dir,
             )
@@ -843,6 +856,9 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
     task_suite = benchmark_dict[cfg.task_suite_name]()
     num_tasks = task_suite.n_tasks
 
+    task_categories = get_task_category(cfg=cfg)
+    assert len(task_categories) == num_tasks, "Number of task categories must match number of tasks"
+
     log_message(f"Task suite: {cfg.task_suite_name}", log_file)
     log_message(f"Number of tasks: {num_tasks}", log_file)
 
@@ -865,9 +881,10 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
     for task_id in pbar:
         if task_id not in active_range:
             continue
-        
+        category = task_categories[task_id]
         log_message(f"=" * 60, log_file)
         log_message(f"Evaluating: {task_id} / {num_tasks}", log_file)
+        log_message(f"Task Category: {category}")
         
         (
             total_episodes,
@@ -876,6 +893,7 @@ def eval_libero(cfg: PolicyEvalConfig) -> float:
             cfg,
             task_suite,
             task_id,
+            category,
             model,
             planning_model,
             dataset_stats,

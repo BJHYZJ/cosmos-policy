@@ -19,11 +19,11 @@ CUDA_VISIBLE_DEVICES=0 uv run --extra cu128 --group libero_plus --python 3.10 \
         --normalize_proprio True \
         --unnormalize_actions True \
         --dataset_stats_path nvidia/Cosmos-Policy-LIBERO-Predict2-2B/libero_dataset_statistics.json \
-        --t5_text_embeddings_path "./logs/libero_plus_t5_embedding_cache/libero_10.pkl" \
+        --t5_text_embeddings_path "./logs/libero_plus_t5_embedding_cache/libero_goal.pkl" \
         --trained_with_image_aug True \
         --chunk_size 16 \
         --num_open_loop_steps 16 \
-        --task_suite_name libero_10 \
+        --task_suite_name libero_goal \
         --local_log_dir ./logs/libero_plus/test \
         --randomize_seed False \
         --data_collection False \

@@ -74,7 +74,7 @@ def get_libero_wrist_image(obs, flip_images: bool = False):
 #     return mp4_path
 
 
-def save_rollout_video(rollout_images, idx, success, task_description, log_file=None, save_dir=None):
+def save_rollout_video(rollout_images, idx, success, task_description, task_info_language=None, log_file=None, save_dir=None):
     """Saves an MP4 replay of an episode in the specified directory."""
     # If save_dir is not provided, fallback to a default or current dir
     if save_dir is None:
@@ -82,9 +82,12 @@ def save_rollout_video(rollout_images, idx, success, task_description, log_file=
     
     os.makedirs(save_dir, exist_ok=True)
     
-    processed_task_description = task_description.lower().replace(" ", "_").replace("\n", "_").replace(".", "_")[:40]
+    processed_task_description = task_description.lower().replace(" ", "_").replace("\n", "_").replace(".", "_")
     # We use idx and success in the filename for easy filtering
-    mp4_path = os.path.join(save_dir, f"video--episode={idx}--success={success}--task={processed_task_description}.mp4")
+    if task_info_language is not None:
+        mp4_path = os.path.join(save_dir, f"success={success}--{task_info_language}--video--episode={idx}--task={processed_task_description}.mp4")
+    else:
+        mp4_path = os.path.join(save_dir, f"success={success}--video--episode={idx}--task={processed_task_description}.mp4")
     
     video_writer = imageio.get_writer(mp4_path, fps=30)
     for img in rollout_images:
@@ -108,6 +111,7 @@ def save_rollout_video_with_future_image_predictions(
     future_primary_image_predictions=None,
     future_wrist_image_predictions=None,
     show_diff=False,
+    task_info_language=None,
     log_file=None,
     log_dir=None,
 ):
@@ -115,8 +119,11 @@ def save_rollout_video_with_future_image_predictions(
     if log_dir is None:
         log_dir = f"./rollouts/{DATE}"
     os.makedirs(log_dir, exist_ok=True)
-    processed_task_description = task_description.lower().replace(" ", "_").replace("\n", "_").replace(".", "_")[:50]
-    mp4_path = f"{log_dir}/{DATE_TIME}--with_future_img--episode={idx}--success={success}--task={processed_task_description}.mp4"
+    processed_task_description = task_description.lower().replace(" ", "_").replace("\n", "_").replace(".", "_")
+    if task_info_language is not None:
+        mp4_path = f"{log_dir}/with_future_img--success={success}--{task_info_language}--episode={idx}--success={success}--task={processed_task_description}.mp4"
+    else:
+        mp4_path = f"{log_dir}/with_future_img--success={success}--episode={idx}--task={processed_task_description}.mp4"
     video_writer = imageio.get_writer(mp4_path, fps=30)
 
     # Determine availability of predictions

@@ -2,13 +2,7 @@ import os
 import re
 import json
 
-def process_class(path):
-    with open(path, "r", encoding="utf-8") as f:
-        task_classification = json.load(f)
-    
-    for key, value in task_classification
-
-def parse_libero_logs(root_dir="."):
+def parse_libero_logs(root_dir):
     # Regex for filename range: e.g., range_[0, 300]
     range_pattern = re.compile(r"range_\[(-?\d+),\s*(-?\d+)\]")
     
@@ -98,6 +92,6 @@ def parse_libero_logs(root_dir="."):
 if __name__ == "__main__":
     # Ensure the script runs in the directory where your log folders are located
     root_dir = "./logs/libero_plus"
-    task_classification_path = "LIBERO-plus/libero/libero/benchmark/task_classification.json"
-    process_class(path=task_classification_path)
     parse_libero_logs(root_dir=root_dir)
+
+

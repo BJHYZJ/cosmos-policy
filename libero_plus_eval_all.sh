@@ -15,7 +15,7 @@ STEPS_ACT=5
 STEPS_FUTURE=1
 STEPS_VALUE=1
 DETERMINISTIC="True"
-SAVE_VIDEO="False"
+SAVE_VIDEO="True"
 
 ################################################################################
 # 2. Execution Function
@@ -29,7 +29,7 @@ run_task() {
     
     local emb_path="./logs/libero_plus_t5_embedding_cache/${task}.pkl"
     local note="libero_plus_${task}_s${seed}_step${STEPS_ACT}_det${DETERMINISTIC}"
-    local local_dir="./logs/libero_plus/${task}_seed${seed}"
+    local local_dir="./logs/libero_plus_with_video/${task}_seed${seed}"
     
     mkdir -p "$local_dir"
 
@@ -95,14 +95,14 @@ run_task() {
 # ( run_task 7 libero_object 195 2100 -1;   ) &
 
 # ### libero_goal
-# ( run_task 0 libero_goal 195 0 300;  ) &
-# ( run_task 1 libero_goal 195 300 600;  ) &
-# ( run_task 2 libero_goal 195 600 900;  ) &
-# ( run_task 3 libero_goal 195 900 1200;  ) &
-# ( run_task 4 libero_goal 195 1200 1500;  ) &
-# ( run_task 5 libero_goal 195 1500 1800;  ) &
-# ( run_task 6 libero_goal 195 1800 2100;  ) &
-# ( run_task 7 libero_goal 195 2100 -1;   ) &
+( run_task 0 libero_goal 195 0 300;  ) &
+( run_task 1 libero_goal 195 300 600;  ) &
+( run_task 2 libero_goal 195 600 900;  ) &
+( run_task 3 libero_goal 195 900 1200;  ) &
+( run_task 4 libero_goal 195 1200 1500;  ) &
+( run_task 5 libero_goal 195 1500 1800;  ) &
+( run_task 6 libero_goal 195 1800 2100;  ) &
+( run_task 7 libero_goal 195 2100 -1;   ) &
 
 # ### libero_10
 # ( run_task 0 libero_10 195 0 300;  ) &
@@ -116,45 +116,15 @@ run_task() {
 
 
 
-( run_task 0 libero_spatial 195 0 300;    run_task 0 libero_object 195 0 300;    run_task 0 libero_goal 195 0 300;    run_task 0 libero_10 195 0 300;    ) &
-( run_task 1 libero_spatial 195 300 600;  run_task 1 libero_object 195 300 600;  run_task 1 libero_goal 195 300 600;  run_task 1 libero_10 195 300 600;  ) &
-( run_task 2 libero_spatial 195 600 900;  run_task 2 libero_object 195 600 900;  run_task 2 libero_goal 195 600 900;  run_task 2 libero_10 195 600 900;  ) &
-( run_task 3 libero_spatial 195 900 1200; run_task 3 libero_object 195 900 1200; run_task 3 libero_goal 195 900 1200; run_task 3 libero_10 195 900 1200; ) &
-( run_task 4 libero_spatial 195 1200 1500; run_task 4 libero_object 195 1200 1500; run_task 4 libero_goal 195 1200 1500; run_task 4 libero_10 195 1200 1500; ) &
-( run_task 5 libero_spatial 195 1500 1800; run_task 5 libero_object 195 1500 1800; run_task 5 libero_goal 195 1500 1800; run_task 5 libero_10 195 1500 1800; ) &
-( run_task 6 libero_spatial 195 1800 2100; run_task 6 libero_object 195 1800 2100; run_task 6 libero_goal 195 1800 2100; run_task 6 libero_10 195 1800 2100; ) &
-( run_task 7 libero_spatial 195 2100 -1;   run_task 7 libero_object 195 2100 -1;   run_task 7 libero_goal 195 2100 -1;   run_task 7 libero_10 195 2100 -1;   ) &
+# ( run_task 0 libero_spatial 195 0 300;    run_task 0 libero_object 195 0 300;    run_task 0 libero_goal 195 0 300;    run_task 0 libero_10 195 0 300;    ) &
+# ( run_task 1 libero_spatial 195 300 600;  run_task 1 libero_object 195 300 600;  run_task 1 libero_goal 195 300 600;  run_task 1 libero_10 195 300 600;  ) &
+# ( run_task 2 libero_spatial 195 600 900;  run_task 2 libero_object 195 600 900;  run_task 2 libero_goal 195 600 900;  run_task 2 libero_10 195 600 900;  ) &
+# ( run_task 3 libero_spatial 195 900 1200; run_task 3 libero_object 195 900 1200; run_task 3 libero_goal 195 900 1200; run_task 3 libero_10 195 900 1200; ) &
+# ( run_task 4 libero_spatial 195 1200 1500; run_task 4 libero_object 195 1200 1500; run_task 4 libero_goal 195 1200 1500; run_task 4 libero_10 195 1200 1500; ) &
+# ( run_task 5 libero_spatial 195 1500 1800; run_task 5 libero_object 195 1500 1800; run_task 5 libero_goal 195 1500 1800; run_task 5 libero_10 195 1500 1800; ) &
+# ( run_task 6 libero_spatial 195 1800 2100; run_task 6 libero_object 195 1800 2100; run_task 6 libero_goal 195 1800 2100; run_task 6 libero_10 195 1800 2100; ) &
+# ( run_task 7 libero_spatial 195 2100 -1;   run_task 7 libero_object 195 2100 -1;   run_task 7 libero_goal 195 2100 -1;   run_task 7 libero_10 195 2100 -1;   ) &
 
-
-# ( run_task 0 libero_10 195 0 1; ) &
-# ( run_task 1 libero_10 195 100 101; ) &
-# ( run_task 2 libero_goal 195 0 1; ) &
-# ( run_task 3 libero_goal 195 100 101; ) &
-# ( run_task 4 libero_spatial 195 0 1; ) &
-# ( run_task 5 libero_spatial 195 100 101; ) &
-# ( run_task 6 libero_object 195 0 1; ) &
-# ( run_task 7 libero_object 195 100 101; ) &
-
-
-
-# ( run_task 2 libero_10 195 0 1200; ) &
-# ( run_task 3 libero_10 195 1200 -1; ) &
-# ( run_task 2 libero_goal 195 0 1200; ) &
-# ( run_task 3 libero_goal 195 1200 -1; ) &
-# ( run_task 4 libero_spatial 195 0 1200; ) & 
-# ( run_task 5 libero_spatial 195 1200 -1; ) &
-# ( run_task 6 libero_object 195 0 1200; ) &
-# ( run_task 7 libero_object 195 1200 -1; ) &
-
-
-# ( run_task 0 libero_spatial 195; run_task 0 libero_spatial 196 ) &
-# ( run_task 1 libero_spatial 197; run_task 1 libero_object 195 ) &
-# ( run_task 2 libero_object  196; run_task 2 libero_object  197 ) &
-# ( run_task 3 libero_goal    195; run_task 3 libero_goal    196 ) &
-# ( run_task 4 libero_goal    197 ) &
-# ( run_task 5 libero_10      195 ) &
-# ( run_task 6 libero_10      196 ) &
-# ( run_task 7 libero_10      197 ) &
 
 wait
 echo "All LIBERO-Plus evaluation tasks have completed."
